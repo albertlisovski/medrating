@@ -1,4 +1,4 @@
-import os
+from report import Report
 
 def validate_output_file(file_name):
     try:
