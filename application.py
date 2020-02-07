@@ -1,6 +1,9 @@
 import requests
+import json
+import os
 from requests.exceptions import HTTPError
 from report import Report
+
 
 def get_data(url):
     try:
@@ -14,31 +17,44 @@ def get_data(url):
         return {}
     return response.json()
 
+
 class Application:
     def __init__(self):
         self.tasks = []
         self.users = []
 
-    def get_data_from_url(self):
-        self.tasks = get_data('https://json.medrating.org/todos')
-        self.users = get_data('https://json.medrating.org/users')
+    def get_data_from_url(self, task_url, user_url):
+        self.tasks = get_data(task_url)
+        self.users = get_data(user_url)
 
-    def get_data_from_file(self):
-        pass
+    def get_data_from_file(self, task_file, user_file):
+        with open(task_file, "r") as read_file:
+            self.tasks = json.load(read_file)
+        with open(user_file, "r") as read_file:
+            self.users = json.load(read_file)
 
-    def generate_reports(self):
+    def generate_reports(self, task_dir='./', no_file=False):
         for user in self.users:
-            report = Report(str(f'./tasks/{user["username"]}.txt.tmp'))
+            report = Report(str(f'{task_dir}{user["username"]}.txt.tmp'))
             # готовим содержимое файла в виде списка. Если задач нет, то переходим к следующему пользователю.
             if not report.prepare_content(user, self.tasks):
                 continue
-            # сохраняем временный файл
-            report.write_temp_file(report.file_name)
-            # валидируем временный файл
-            if report.validate_output_file(report.file_name):
-                # сохраняем изменения, переименовывая старый отчет
-                report.commit()
-            else:
-                print("Report validation error. Changes will not accepted.")
-                # удаляем временный файл
-                report.rollback()
+            # если отключен дебажный флаг
+            if not no_file:
+                if not os.path.exists(task_dir):
+                    try:
+                        os.makedirs(task_dir)
+                    except Exception as err:
+                        print(f'{err} Report cannot be saved.')
+                        break
+                # сохраняем временный файл
+                if not report.write_temp_file(report.file_name):
+                    break
+                # валидируем временный файл
+                if report.validate_output_file(report.file_name):
+                    # сохраняем изменения, переименовывая старый отчет
+                    report.commit()
+                else:
+                    print("Report validation error. Changes will not accepted.")
+                    # удаляем временный файл
+                    report.rollback()

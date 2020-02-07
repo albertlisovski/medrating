@@ -1,25 +1,15 @@
-import os
 import sys
 from application import Application
-
-
-class User:
-    def __init__(self, completed_tasks, uncompleted_tasks):
-        self.completed_tasks = completed_tasks
-        self.uncompleted_tasks = uncompleted_tasks
 
 
 if __name__ == "__main__":
 
     app = Application()
-    app.get_data_from_url()
+    app.get_data_from_url('https://json.medrating.org/todos', 'https://json.medrating.org/users')
+    # app.get_data_from_file('./data/default_tasks.json', './data/default_users.json')
 
     if (app.tasks == {}) or (app.users == {}):
         print("Data collecting failed. Program aborted.")
         sys.exit()
 
-    if not os.path.exists('tasks'):
-        os.makedirs('tasks')
-
-    app.generate_reports()
-
+    app.generate_reports('./tasks/')

@@ -1,5 +1,7 @@
 import os
 from time import localtime, strftime
+from shutil import copy
+
 
 class Report:
     def __init__(self, f_name):
@@ -21,7 +23,7 @@ class Report:
                 else:
                     self.uncompleted_tasks.append(task_title)
 
-        if (self.completed_tasks == []) and (self.completed_tasks == []):
+        if (self.completed_tasks == []) and (self.uncompleted_tasks == []):
             print(f'There are no tasks for user {user["id"]}. Nothing to save.')
             return False
 
@@ -37,8 +39,13 @@ class Report:
         return True
 
     def write_temp_file(self, file_name):
-        with open(file_name, "w") as file:
-            file.writelines(self.content)
+        try:
+            with open(file_name, "w") as file:
+                file.writelines(self.content)
+                return True
+        except Exception as err:
+            print(f'{err} Report cannot be saved.')
+            return False
 
     def validate_output_file(self, file_name):
         try:
@@ -57,7 +64,7 @@ class Report:
         # если файл уже существует, то его нужно переименовать по правилу
         if os.path.exists(self.file_name):
             file_time_stamp = strftime("%Y-%m-%dT%H:%M", localtime(os.path.getctime(self.file_name)))
-            os.rename(self.file_name, str(f'{self.file_name[:-4]}_{file_time_stamp}.txt'))
+            copy(self.file_name, str(f'{self.file_name[:-4]}_{file_time_stamp}.txt'))
         os.rename(self.file_name + '.tmp', self.file_name)
 
     def rollback(self):
