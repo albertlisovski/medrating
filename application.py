@@ -28,15 +28,18 @@ class Application:
         self.users = get_data(user_url)
 
     def get_data_from_file(self, task_file, user_file):
-        with open(task_file, "r") as read_file:
-            self.tasks = json.load(read_file)
-        with open(user_file, "r") as read_file:
-            self.users = json.load(read_file)
+        try:
+            with open(task_file, "r") as read_file:
+                self.tasks = json.load(read_file)
+            with open(user_file, "r") as read_file:
+                self.users = json.load(read_file)
+        except FileNotFoundError as err:
+            print(err)
 
     def generate_reports(self, task_dir='./', no_file=False):
         for user in self.users:
             report = Report(str(f'{task_dir}{user["username"]}.txt.tmp'))
-            # готовим содержимое файла в виде списка. Если задач нет, то переходим к следующему пользователю.
+            # готовим содержимое файла в виде списка.
             if not report.prepare_content(user, self.tasks):
                 continue
             # если отключен дебажный флаг

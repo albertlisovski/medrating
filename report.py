@@ -22,7 +22,7 @@ class Report:
                     self.completed_tasks.append(task_title)
                 else:
                     self.uncompleted_tasks.append(task_title)
-
+        # Если задач нет, то переходим к следующему пользователю.
         if (self.completed_tasks == []) and (self.uncompleted_tasks == []):
             print(f'There are no tasks for user {user["id"]}. Nothing to save.')
             return False
