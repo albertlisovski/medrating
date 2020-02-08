@@ -24,10 +24,12 @@ class Report:
                     self.uncompleted_tasks.append(task_title)
         # Если задач нет, то переходим к следующему пользователю.
         if (self.completed_tasks == []) and (self.uncompleted_tasks == []):
-            print(f'There are no tasks for user {user["id"]}. Nothing to save.')
+            print(f'There are no tasks for user {user["id"]}. '
+                  f'Nothing to save.')
             return False
 
-        self.content = [f'{user["name"]} <{user["email"]}> {strftime("%Y-%m-%d %H:%M", localtime())}\n']
+        self.content = [f'{user["name"]} <{user["email"]}> '
+                        f'{strftime("%Y-%m-%d %H:%M", localtime())}\n']
         self.content.append(f'{user["company"]["name"]}\n')
         self.content.append('\n')
         self.content.append('Завершенные задачи:' + '\n')
@@ -63,8 +65,10 @@ class Report:
         self.file_name = self.file_name[:-4]
         # если файл уже существует, то его нужно переименовать по правилу
         if os.path.exists(self.file_name):
-            file_time_stamp = strftime("%Y-%m-%dT%H:%M", localtime(os.path.getctime(self.file_name)))
-            copy(self.file_name, str(f'{self.file_name[:-4]}_{file_time_stamp}.txt'))
+            file_time_stamp = strftime(
+                "%Y-%m-%dT%H:%M", localtime(os.path.getctime(self.file_name)))
+            copy(self.file_name,
+                 str(f'{self.file_name[:-4]}_{file_time_stamp}.txt'))
         os.rename(self.file_name + '.tmp', self.file_name)
 
     def rollback(self):

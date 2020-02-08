@@ -2,6 +2,7 @@ import requests
 import json
 import os
 from requests.exceptions import HTTPError
+
 from report import Report
 
 
@@ -58,6 +59,6 @@ class Application:
                     # сохраняем изменения, переименовывая старый отчет
                     report.commit()
                 else:
-                    print("Report validation error. Changes will not accepted.")
+                    print("Report validation error. Changes not accepted.")
                     # удаляем временный файл
                     report.rollback()
